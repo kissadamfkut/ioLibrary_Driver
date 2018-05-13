@@ -26,6 +26,7 @@ This driver provides the Berkeley Socket type APIs.
   - [ioLibrary Doxygen doument](https://github.com/Wiznet/ioLibrary_Driver/blob/master/Ethernet/Socket_APIs_V3.0.3.chm) : Refer to **TODO** in this document
     - Define what chip is used in **wizchip_conf.h**
     - Define what Host I/F mode is used in **wizchip_conf.h**
+    - You can use the **wizchip_conf_emaple.h** as a sample
 
 ## Revision History
   * ioLibrary V4.0.0 Released : 29, MAR, 2018
