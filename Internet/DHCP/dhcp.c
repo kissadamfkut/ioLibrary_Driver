@@ -973,5 +973,10 @@ uint32_t getDHCPLeasetime(void)
 }
 
 
+void DHCP_renew(void)
+{
+	send_DHCP_DISCOVER();
+	dhcp_state = STATE_DHCP_DISCOVER;
+}
 
 

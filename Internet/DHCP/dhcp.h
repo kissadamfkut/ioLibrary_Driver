@@ -149,4 +149,10 @@ void getDNSfromDHCP(uint8_t* ip);
  */
 uint32_t getDHCPLeasetime(void);
 
+/*
+ * @brief Get the leased time by DHCP sever
+ */
+void DHCP_renew(void);
+
+
 #endif	/* _DHCP_H_ */
