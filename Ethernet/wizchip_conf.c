@@ -411,7 +411,10 @@ void wizchip_sw_reset(void)
 
 int8_t wizchip_init(uint8_t* txsize, uint8_t* rxsize)
 {
-   int8_t i,j;
+   int8_t i;
+#if _WIZCHIP_ < W5200
+   int8_t j;
+#endif
    int8_t tmp = 0;
    wizchip_sw_reset();
    if(txsize)
@@ -834,7 +837,6 @@ int8_t wizphy_setphypmode(uint8_t pmode)
 
 void wizchip_setnetinfo(wiz_NetInfo* pnetinfo)
 {
-	int i,j,k;
    setSHAR(pnetinfo->mac);
    setGAR(pnetinfo->gw);
    setSUBR(pnetinfo->sn);
