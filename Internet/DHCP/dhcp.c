@@ -975,8 +975,11 @@ uint32_t getDHCPLeasetime(void)
 
 void DHCP_renew(void)
 {
-	send_DHCP_DISCOVER();
-	dhcp_state = STATE_DHCP_DISCOVER;
+	uint8_t zeroip[4] = {0,0,0,0};
+	setSIPR(zeroip);
+	setGAR(zeroip);
+	reset_DHCP_timeout();
+	dhcp_state = STATE_DHCP_INIT;
 }
 
 
