@@ -150,6 +150,12 @@ void getDNSfromDHCP(uint8_t* ip);
 uint32_t getDHCPLeasetime(void);
 
 /*
+ * @brief Get the remaining time until the IP address is leased
+ * @retrun unit 1s
+ */
+uint32_t getDHCPTimeBeforeLease(void);
+
+/*
  * @brief Get the leased time by DHCP sever
  */
 void DHCP_renew(void);
