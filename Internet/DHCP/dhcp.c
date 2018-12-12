@@ -978,11 +978,9 @@ uint32_t getDHCPTimeBeforeLease(void){
 
 void DHCP_renew(void)
 {
-	uint8_t zeroip[4] = {0,0,0,0};
-	setSIPR(zeroip);
-	setGAR(zeroip);
-	reset_DHCP_timeout();
-	dhcp_state = DHCP_IP_LEASED;
+	dhcp_lease_time = 0;
+	if(dhcp_state != STATE_DHCP_LEASED)
+		dhcp_state = STATE_DHCP_INIT;
 }
 
 
