@@ -736,7 +736,6 @@ uint8_t DHCP_run(void)
 		break;
 
 		case STATE_DHCP_LEASED :
-		   ret = DHCP_IP_LEASED;
 			if ((dhcp_lease_time != INFINITE_LEASETIME) && ((dhcp_lease_time/2) < dhcp_tick_1s)) {
 				
 #ifdef _DHCP_DEBUG_
@@ -756,7 +755,8 @@ uint8_t DHCP_run(void)
 				reset_DHCP_timeout();
 
 				dhcp_state = STATE_DHCP_REREQUEST;
-			}
+			} else
+				ret = DHCP_IP_LEASED;
 		break;
 
 		case STATE_DHCP_REREQUEST :
