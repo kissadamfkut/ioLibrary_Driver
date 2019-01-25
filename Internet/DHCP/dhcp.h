@@ -156,9 +156,9 @@ uint32_t getDHCPLeasetime(void);
 uint32_t getDHCPTimeBeforeLease(void);
 
 /*
- * @brief Get the leased time by DHCP sever
+ * @brief Broadcast DHCPREQUEST at the next tick
  */
-void DHCP_renew(void);
+void DHCP_rebind(void);
 
 
 #endif	/* _DHCP_H_ */

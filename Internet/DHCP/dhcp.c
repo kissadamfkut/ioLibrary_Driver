@@ -66,6 +66,7 @@
 #define STATE_DHCP_REREQUEST     4        ///< send REQUEST for maintaining leased IP
 #define STATE_DHCP_RELEASE       5        ///< No use
 #define STATE_DHCP_STOP          6        ///< Stop procssing DHCP
+#define STATE_DHCP_REBIND		 7        ///< Broadcast REQUEST for maintaining leased IP
 
 #define DHCP_FLAGSBROADCAST      0x8000   ///< The broadcast value of flags in @ref RIP_MSG 
 #define DHCP_FLAGSUNICAST        0x0000   ///< The unicast   value of flags in @ref RIP_MSG
@@ -736,6 +737,7 @@ uint8_t DHCP_run(void)
 		break;
 
 		case STATE_DHCP_LEASED :
+			ret = DHCP_IP_LEASED;
 			if ((dhcp_lease_time != INFINITE_LEASETIME) && ((dhcp_lease_time/2) < dhcp_tick_1s)) {
 				
 #ifdef _DHCP_DEBUG_
@@ -755,8 +757,12 @@ uint8_t DHCP_run(void)
 				reset_DHCP_timeout();
 
 				dhcp_state = STATE_DHCP_REREQUEST;
-			} else
-				ret = DHCP_IP_LEASED;
+			}
+		break;
+		case STATE_DHCP_REBIND:
+			reset_DHCP_timeout();
+			send_DHCP_REQUEST();
+			dhcp_state = STATE_DHCP_REQUEST;
 		break;
 
 		case STATE_DHCP_REREQUEST :
@@ -841,13 +847,14 @@ uint8_t check_DHCP_timeout(void)
 
 		switch(dhcp_state) {
 			case STATE_DHCP_DISCOVER:
-				dhcp_state = STATE_DHCP_INIT;
-				ret = DHCP_FAILED;
-				break;
 			case STATE_DHCP_REQUEST:
 			case STATE_DHCP_REREQUEST:
-				send_DHCP_DISCOVER();
-				dhcp_state = STATE_DHCP_DISCOVER;
+				dhcp_state = STATE_DHCP_INIT;
+				// WIZchip Netinfo Clear
+				uint8_t zeroip[4] = {0,0,0,0};
+				setSIPR(zeroip);
+				setGAR(zeroip);
+				ret = DHCP_FAILED;
 				break;
 			default :
 				break;
@@ -914,7 +921,6 @@ void DHCP_init(uint8_t s, uint8_t * buf)
 
 	// WIZchip Netinfo Clear
 	setSIPR(zeroip);
-	setSIPR(zeroip);
 	setGAR(zeroip);
 
 	reset_DHCP_timeout();
@@ -976,11 +982,15 @@ uint32_t getDHCPTimeBeforeLease(void){
 	return dhcp_tick_1s;
 }
 
-void DHCP_renew(void)
+void DHCP_rebind(void)
 {
-	dhcp_lease_time = 0;
-	if(dhcp_state != STATE_DHCP_LEASED)
-		dhcp_state = STATE_DHCP_INIT;
+	if (dhcp_state == STATE_DHCP_LEASED) {
+		// WIZchip Netinfo Clear
+		uint8_t zeroip[4] = { 0, 0, 0, 0 };
+		setSIPR(zeroip);
+		setGAR(zeroip);
+		dhcp_state = STATE_DHCP_REBIND;
+	}
 }
 
 
