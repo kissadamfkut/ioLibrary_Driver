@@ -45,6 +45,12 @@
 #ifndef _DHCP_H_
 #define _DHCP_H_
 
+#include <stddef.h>
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 /*
  * @brief 
  * @details If you want to display debug & procssing message, Define _DHCP_DEBUG_ 
@@ -159,6 +165,10 @@ uint32_t getDHCPTimeBeforeLease(void);
  * @brief Get the leased time by DHCP sever
  */
 void DHCP_renew(void);
+
+#ifdef __cplusplus
+ }
+#endif
 
 
 #endif	/* _DHCP_H_ */
