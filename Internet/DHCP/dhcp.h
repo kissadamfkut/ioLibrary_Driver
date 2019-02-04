@@ -71,7 +71,7 @@
 
 #define MAGIC_COOKIE             0x63825363  ///< Any number. You can be modifyed it any number
 
-#define DCHP_HOST_NAME           "MATRIX  4"
+#define DCHP_HOST_NAME           "MATRIX 4\0"
 
 /* 
  * @brief return value of @ref DHCP_run()
@@ -162,9 +162,9 @@ uint32_t getDHCPLeasetime(void);
 uint32_t getDHCPTimeBeforeLease(void);
 
 /*
- * @brief Get the leased time by DHCP sever
+ * @brief Broadcast DHCPREQUEST at the next tick
  */
-void DHCP_renew(void);
+void DHCP_rebind(void);
 
 #ifdef __cplusplus
  }
