@@ -51,6 +51,7 @@
 
 #include "socket.h"
 #include "dhcp.h"
+#include <stdlib.h>
 
 /* If you want to display debug & procssing message, Define _DHCP_DEBUG_ in dhcp.h */
 
@@ -355,6 +356,7 @@ void send_DHCP_DISCOVER(void)
 	uint8_t ip[4];
 	uint16_t k = 0;
    
+	DHCP_XID = rand();
    makeDHCPMSG();
 
    k = 4;     // beacaue MAGIC_COOKIE already made by makeDHCPMSG()
@@ -417,6 +419,7 @@ void send_DHCP_REQUEST(void)
 	uint8_t ip[4];
 	uint16_t k = 0;
 
+	DHCP_XID = rand();
    makeDHCPMSG();
 
    if(dhcp_state == STATE_DHCP_LEASED || dhcp_state == STATE_DHCP_REREQUEST)
@@ -594,6 +597,28 @@ int8_t parseDHCPMSG(void)
 		     (pDHCPMSG->chaddr[2] != DHCP_CHADDR[2]) || (pDHCPMSG->chaddr[3] != DHCP_CHADDR[3]) ||
 		     (pDHCPMSG->chaddr[4] != DHCP_CHADDR[4]) || (pDHCPMSG->chaddr[5] != DHCP_CHADDR[5])   )
          return 0;
+
+		/* TODO investigate this
+		 * Prevent unknown HardFault
+		 * pDHCPMSG->xid != DHCP_XID //causes HardFault
+		 */
+		uint32_t xid = 0;
+
+		uint8_t* ptmp = (uint8_t*)(&pDHCPMSG->xid);
+		uint8_t* pxid = (uint8_t*)(&xid);
+
+		/* TODO use builtin functions
+		 * byte order swap
+		 */
+		pxid[0] = ptmp[3];
+		pxid[1] = ptmp[2];
+		pxid[2] = ptmp[1];
+		pxid[3] = ptmp[0];
+
+		// XID check
+		if(xid != DHCP_XID)
+         return 0;
+
 		p = (uint8_t *)(&pDHCPMSG->op);
 		p = p + 240;      // 240 = sizeof(RIP_MSG) + MAGIC_COOKIE size in RIP_MSG.opt - sizeof(RIP_MSG.opt)
 		e = p + (len - 240);
@@ -750,7 +775,6 @@ uint8_t DHCP_run(void)
 				OLD_allocated_ip[2] = DHCP_allocated_ip[2];
 				OLD_allocated_ip[3] = DHCP_allocated_ip[3];
 				
-				DHCP_XID++;
 
 				send_DHCP_REQUEST();
 
@@ -917,7 +941,8 @@ void DHCP_init(uint8_t s, uint8_t * buf)
 
 	DHCP_SOCKET = s; // SOCK_DHCP
 	pDHCPMSG = (RIP_MSG*)buf;
-	DHCP_XID = 0x12345678;
+	// DHCP_XID
+	srand((DHCP_CHADDR[2] << 24) | (DHCP_CHADDR[3] << 16) | (DHCP_CHADDR[4] << 8) | (DHCP_CHADDR[5]));
 
 	// WIZchip Netinfo Clear
 	setSIPR(zeroip);
@@ -992,5 +1017,3 @@ void DHCP_rebind(void)
 		dhcp_state = STATE_DHCP_REBIND;
 	}
 }
-
-
