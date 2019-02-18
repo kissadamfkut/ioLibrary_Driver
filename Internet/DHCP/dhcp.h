@@ -71,7 +71,7 @@
 
 #define MAGIC_COOKIE             0x63825363  ///< Any number. You can be modifyed it any number
 
-#define DCHP_HOST_NAME           "MATRIX 4\0"
+#define DCHP_HOST_NAME           "MATRIX  4"
 
 /* 
  * @brief return value of @ref DHCP_run()
